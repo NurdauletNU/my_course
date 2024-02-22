@@ -35,12 +35,12 @@ export function Navbar1() {
               </Link>
             </li>
             <li>
-              <Link to="#" className="nav-link px-2 text-white">
+              <Link to="faqs/" className="nav-link px-2 text-white">
                 FAQs
               </Link>
             </li>
             <li>
-              <Link to="#" className="nav-link px-2 text-white">
+              <Link to="about/" className="nav-link px-2 text-white">
                 About
               </Link>
             </li>
