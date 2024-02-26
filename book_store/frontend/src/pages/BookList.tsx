@@ -1,45 +1,72 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Book {
   id: number;
   title: string;
-  author: string;
+  description: string;
 }
 
-const BookList: React.FC = () => {
+function BookList() {
   const [books, setBooks] = useState<Book[]>([]);
+  const [currentBookIndex, setCurrentBookIndex] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
+    async function fetchBooks() {
+      try {
+        const response = await axios.get("http://127.0.0.1:8000/api/book/");
+        setBooks(response.data.serialized_books);
+        setTotalPages(response.data.total_pages);
+      } catch (error) {
+        console.error("Ошибка при получении данных о книгах:", error);
+      }
+    }
+
     fetchBooks();
   }, []);
 
-  const fetchBooks = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:8000/books/?page=1&pageSize=10",
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch books");
-      }
-      const data = await response.json();
-      setBooks(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const handleNextBook = () => {
+    if (currentBookIndex < books.length - 1) {
+      setCurrentBookIndex(currentBookIndex + 1);
     }
   };
 
+  const handlePrevBook = () => {
+    if (currentBookIndex > 0) {
+      setCurrentBookIndex(currentBookIndex - 1);
+    }
+  };
+
+  const currentPage = currentBookIndex + 1;
+
   return (
     <div>
-      <h1>Book List</h1>
-      <ul>
-        {books.map((book) => (
-          <li key={book.id}>
-            {book.title} by {book.author}
-          </li>
-        ))}
-      </ul>
+      <h1>Список книг</h1>
+      <div>
+        {books.length > 0 && (
+          <div>
+            <h2>{books[currentBookIndex].title}</h2>
+            <p>{books[currentBookIndex].description}</p>
+          </div>
+        )}
+        <div>
+          <button onClick={handlePrevBook} disabled={currentBookIndex === 0}>
+            Предыдущая книга
+          </button>
+          <button
+            onClick={handleNextBook}
+            disabled={currentBookIndex === books.length - 1}
+          >
+            Следующая книга
+          </button>
+          <p>
+            Страница {currentPage} из {totalPages}
+          </p>
+        </div>
+      </div>
     </div>
   );
-};
+}
 
 export default BookList;

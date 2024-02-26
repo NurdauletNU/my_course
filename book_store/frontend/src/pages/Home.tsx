@@ -1,4 +1,5 @@
 import * as bases from "../components/bases";
+import { Link } from "react-router-dom";
 
 export default function Page() {
   return (
@@ -30,12 +31,12 @@ export default function Page() {
               интересы.
             </p>
             <div className="d-grid gap-2 d-sm-flex justify-content-sm-center">
-              <button
-                type="button"
+              <Link
+                to="/BookList"
                 className="btn btn-outline-info btn-lg px-4 me-sm-3 fw-bold"
               >
-                Подробнее
-              </button>
+                Список книг
+              </Link>
               <button
                 type="button"
                 className="btn btn-outline-light btn-lg px-4"

@@ -4,6 +4,7 @@ import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import About from "../pages/About";
 import FAQs from "../pages/FAQs";
+import BookList from "../pages/BookList";
 // import Login from "../pages/Login";
 
 export default function Router() {
@@ -15,6 +16,7 @@ export default function Router() {
         <Route path={"sign-up/"} element={<Signup />}></Route>
         <Route path={"about/"} element={<About />}></Route>
         <Route path={"faqs/"} element={<FAQs />}></Route>
+        <Route path={"BookList/"} element={<BookList />}></Route>
         <Route path={"*"} element={<Home />}></Route>
       </Routes>
     </BrowserRouter>

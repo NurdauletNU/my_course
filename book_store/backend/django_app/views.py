@@ -32,11 +32,11 @@ def get_books(request: Request) -> Response:
     return Response({"serialized_books": serialized_books, "total_count": total_count, "sort": sort})
 
 
-@api_view(["GET"])
-def get_book(request: Request, book_id: str) -> Response:
-    book = Book.objects.get(id=int(book_id))
-    serializer_book = {"id": book.id, "title": book.title, "description": book.description}
-    return Response({"data": serializer_book})
+# @api_view(["GET"])
+# def get_book(request: Request, book_id: str) -> Response:
+#     book = Book.objects.get(id=int(book_id))
+#     serializer_book = {"id": book.id, "title": book.title, "description": book.description}
+#     return Response({"data": serializer_book})
 
 
 # class BookListAPIView(generics.ListAPIView):
