@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from . import models, serializers
@@ -47,6 +48,7 @@ def get_books(request: Request) -> Response:
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def api(request: Request) -> Response:
     # book_obj = models.Book.objects.all()[0]   # ручная сериализация
     # book_obj1 = {"id": book_obj.id, "title": book_obj.title, "description": book_obj.description}
@@ -61,3 +63,9 @@ def api(request: Request) -> Response:
 #     book = Book.objects.get(id=int(book_id))
 #     serializer_book = {"id": book.id, "title": book.title, "description": book.description}
 #     return Response({"data": serializer_book})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_users(request: Request) -> Response:
+    return Response(data={"users": "ok"})
