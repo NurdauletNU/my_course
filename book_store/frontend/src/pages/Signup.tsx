@@ -14,6 +14,7 @@ const RegistrationForm: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [error, setError] = useState("");
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
 
   const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
   const phoneRegex = /^\d{10}$/;
@@ -61,17 +62,26 @@ const RegistrationForm: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("http://127.0.0.1/api/user/register/", {
-        firstName,
-        lastName,
-        country,
-        phone,
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/user/register/",
+        {
+          firstName,
+          lastName,
+          country,
+          phone,
+          email,
+          password,
+        },
+      );
       console.log("Успешно зарегистрирован", response.data);
+      setRegistrationSuccess(true); // Устанавливаем флаг успешной регистрации
+      // Перезагружаем страницу через 2 секунды
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       console.error("Ошибка при регистрации", error);
+      setError("Ошибка при регистрации. Пожалуйста, попробуйте еще раз.");
     }
   };
 
@@ -221,6 +231,9 @@ const RegistrationForm: React.FC = () => {
             </div>
 
             {error && <p className="text-danger">{error}</p>}
+            {registrationSuccess && (
+              <p className="text-success">Вы успешно зарегистрированы.</p>
+            )}
 
             <button className="btn btn-primary w-100 py-2" type="submit">
               Зарегистрироваться

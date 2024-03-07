@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from rest_framework.decorators import api_view, permission_classes
@@ -75,4 +76,10 @@ def api_users(request: Request) -> Response:
 @permission_classes([AllowAny])
 def api_user_register(request: Request) -> Response:
     print("request.data", request.data)
-    return Response(data={"message": "ok"})
+    email = request.data.get("email", None)
+    password = request.data.get("password", None)
+    if email and password:
+        User.objects.create(email=email, password=make_password(password))
+        return Response(data={"success": "Account is successfully created"})
+    else:
+        return Response(data={"error": "email or password is failed"})
