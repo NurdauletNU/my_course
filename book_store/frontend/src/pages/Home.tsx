@@ -46,6 +46,14 @@ export default function Page() {
             </div>
           </div>
         </div>
+        <img
+          src="https://getbootstrap.com/docs/5.3/examples/heroes/bootstrap-themes.png"
+          className="d-block mx-lg-auto img-fluid"
+          alt="Bootstrap Themes"
+          width="1000"
+          height="800"
+          loading="lazy"
+        />
       </div>
     </bases.Base1>
   );

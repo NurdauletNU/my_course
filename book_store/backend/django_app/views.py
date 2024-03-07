@@ -69,3 +69,10 @@ def api(request: Request) -> Response:
 @permission_classes([IsAuthenticated])
 def api_users(request: Request) -> Response:
     return Response(data={"users": "ok"})
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def api_user_register(request: Request) -> Response:
+    print("request.data", request.data)
+    return Response(data={"message": "ok"})
