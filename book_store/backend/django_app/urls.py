@@ -17,4 +17,5 @@ urlpatterns = [
     path("api/users/", views.api_users),
     path("api/user/register/", views.api_user_register),
     # path("api/book/<str:book_id>/", views.get_book, name="book_detail"),
+    path("api/tokens/", views.token, name="token"),
 ]
