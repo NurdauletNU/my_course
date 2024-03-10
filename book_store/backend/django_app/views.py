@@ -1,3 +1,6 @@
+import random
+import string
+import datetime
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
@@ -104,8 +107,18 @@ def token(request: Request) -> Response:
         return Response(data={"error": "username or password is invalid"}, status=status.HTTP_401_UNAUTHORIZED)
     user_ = utils.execute_sqlite3(
         database=r"D:\my_course\book_store\backend\token.db",
-        query="SELECT id, username FROM User WHERE username = : username AND password = : password",
+        query="SELECT id, username FROM User WHERE username = :username AND password = :password",
         kwargs={"username": username, "password": password},
     )
-    print(user_)
-    return Response(data={"token": "ok"})
+    if len(user_) <= 0:
+        return Response(data={"error": "invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+    user_id, username = user_[0]
+    hash: str = ""
+    for _ in range(128):
+        hash += random.choice(list(string.ascii_letters + string.digits + string.punctuation))
+    utils.execute_sqlite3(
+        database=r"D:\my_course\book_store\backend\token.db",
+        query="INSERT OR REPLACE INTO Token (user_id, token, created_at) VALUES (:user_id, :token, :created_at)",
+        kwargs={"user_id": user_id, "token": hash, "created_at": str(datetime.datetime.now())},
+    )
+    return Response(data={"token": hash})
