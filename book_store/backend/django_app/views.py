@@ -115,10 +115,83 @@ def token(request: Request) -> Response:
     user_id, username = user_[0]
     hash: str = ""
     for _ in range(128):
-        hash += random.choice(list(string.ascii_letters + string.digits + string.punctuation))
+        hash += random.choice(list(string.ascii_letters + string.digits))
     utils.execute_sqlite3(
         database=r"D:\my_course\book_store\backend\token.db",
         query="INSERT OR REPLACE INTO Token (user_id, token, created_at) VALUES (:user_id, :token, :created_at)",
         kwargs={"user_id": user_id, "token": hash, "created_at": str(datetime.datetime.now())},
     )
     return Response(data={"token": hash})
+
+
+# @api_view(["GET"])
+# def user_list(request: Request) -> Response:
+#     token_str = request.query_params.get("token", "")
+#     token = utils.execute_sqlite3(
+#         database=r"D:\my_course\book_store\backend\token.db",
+#         query="SELECT user_id, created_at FROM Token WHERE token = :token",
+#         kwargs={"token": token_str},
+#     )
+#     if len(token) <= 0:
+#         return Response(data={"error": "invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+#     user_id, created_at = token[0]
+#     created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
+#     print(created_at)
+#     return Response(data={"users": []})
+
+
+def authenticate(func):
+    def wrapper(*args, **kwargs):
+        request: Request = args[0]
+        token_str = request.query_params.get("token", "")
+
+        if not token_str:
+            return Response(data={"error": "token is missing"}, status=status.HTTP_401_UNAUTHORIZED)
+        token = utils.execute_sqlite3(
+            database=r"D:\my_course\book_store\backend\token.db",
+            query="SELECT user_id, created_at FROM Token WHERE token = :token",
+            kwargs={"token": token_str},
+        )
+        if not token:
+            return Response(data={"error": "invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+        user_id, created_at = token[0]
+        created_at = datetime.datetime.strptime(created_at, "%Y-%m-%d %H:%M:%S.%f")
+        if (datetime.datetime.now() - datetime.timedelta(minutes=10)) > created_at:
+            return Response(data={"error": "token expired"}, status=status.HTTP_401_UNAUTHORIZED)
+        user_ = utils.execute_sqlite3(
+            database=r"D:\my_course\book_store\backend\token.db",
+            query="SELECT  username FROM User WHERE id = :user_id",
+            kwargs={"user_id": user_id},
+        )
+        if not user_:
+            return Response(data={"error": "user unknown"}, status=status.HTTP_401_UNAUTHORIZED)
+        print(user_)
+        request.userextend = user_
+        args = (request,)
+        res = func(*args, **kwargs)
+        return res
+
+    return wrapper
+
+
+@api_view(http_method_names=["GET"])
+@authenticate
+def user_list(request: Request) -> Response:
+    return Response(data={"data": [request.userextend]})
+
+
+@api_view(http_method_names=["POST"])
+def token_block(request: Request) -> Response:
+    token_for_block = request.data.get("token", "")
+    utils.execute_sqlite3(
+        database=r"D:\my_course\book_store\backend\token.db",
+        query="DELETE FROM Token WHERE token = :token_for_block",
+        kwargs={"token_for_block": token_for_block},
+    )
+    return Response(data={"data": "deleted successfully"})
+
+
+@api_view(http_method_names=["GET"])
+@authenticate
+def token_verify(request: Request) -> Response:
+    return Response(data={"data": "verified successfully"})
