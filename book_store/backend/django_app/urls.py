@@ -19,6 +19,6 @@ urlpatterns = [
     # path("api/book/<str:book_id>/", views.get_book, name="book_detail"),
     path("api/tokens/", views.token, name="token"),
     path("user/list/", views.user_list, name="user_list"),
-    path("api/tokens/check", views.token_verify, name="check"),
-    path("api/tokens/block", views.token_block, name="block"),
+    path("api/tokens/check/", views.token_verify, name="check"),
+    path("api/tokens/block/", views.token_block, name="block"),
 ]
