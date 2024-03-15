@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 import datetime
@@ -10,6 +11,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+import signal
 from . import models, serializers
 from .models import Book
 from django_app import utils
@@ -180,15 +183,36 @@ def user_list(request: Request) -> Response:
     return Response(data={"data": [request.userextend]})
 
 
+logger = logging.getLogger(__name__)
+
+
+def timeout_handler(signum, frame):
+    raise TimeoutError("Request timed out")
+
+
 @api_view(http_method_names=["POST"])
 def token_block(request: Request) -> Response:
-    token_for_block = request.data.get("token", "")
-    utils.execute_sqlite3(
-        database=r"D:\my_course\book_store\backend\token.db",
-        query="DELETE FROM Token WHERE token = :token_for_block",
-        kwargs={"token_for_block": token_for_block},
-    )
-    return Response(data={"data": "deleted successfully"})
+    try:
+
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(5)
+
+        token_for_block = request.data.get("token", "")
+        utils.execute_sqlite3(
+            database=r"D:\my_course\book_store\backend\token.db",
+            query="DELETE FROM Token WHERE token = :token_for_block",
+            kwargs={"token_for_block": token_for_block},
+        )
+        logger.info("Token deleted successfully: %s", token_for_block)
+        return Response(data={"data": "deleted successfully"})
+    except TimeoutError:
+        logger.error("Request timed out")
+        return Response(data={"error": "Request timed out"}, status=status.HTTP_504_GATEWAY_TIMEOUT)
+    except Exception as e:
+        logger.error("An error occurred while deleting token: %s", str(e))
+        return Response(data={"error": "An error occurred"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    finally:
+        signal.alarm(0)
 
 
 @api_view(http_method_names=["GET"])
