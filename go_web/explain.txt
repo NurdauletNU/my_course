@@ -1,0 +1,11 @@
+
+Метод POST выполнять с помощью CMD
+curl -X POST -H "Content-Type: application/json" -d "{\"id\": 4, \"title\": \"Сделать покупки\", \"status\": false}" http://localhost:8080/tasks
+
+
+
+Метод PUT ОБНОВЛЕНИЕ
+curl -X PUT -H "Content-Type: application/json" -d "{\"title\": \"Сделать ДЗ\", \"status\": true}" http://localhost:8080/tasks
+
+Метод DELETE УДАЛЕНИЕ
+curl -X DELETE -H "Content-Type: application/json" -d "{\"title\": \"Купить молоко\", \"status\": true}" http://localhost:8080/tasks
