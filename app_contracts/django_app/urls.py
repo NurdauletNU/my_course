@@ -10,4 +10,6 @@ urlpatterns = [
     path('api/contracts/create/', views.contract_create),
     path('api/contracts/<int:pk>/update/', views.contract_update),
     path('api/contracts/<int:pk>/delete/', views.contract_delete),
+    path("api/get_contract_by_author/<int:pk>", views.get_contract_by_author)
+
 ]

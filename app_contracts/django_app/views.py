@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
@@ -86,3 +88,21 @@ def contract_delete(request, pk):
 
     contract.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_contract_by_author(request, pk):
+    try:
+        author = User.objects.get(pk=pk)
+    except ObjectDoesNotExist:
+        return Response(data={"error": "Автор не найден"}, status=status.HTTP_404_NOT_FOUND)
+
+    contract = models.Contract.objects.filter(author=author)
+    if not contract.exists():
+        return Response(data={"error": "Контракты не найдены для этого автора"}, status=status.HTTP_404_NOT_FOUND)
+
+    serializer = ContractSerializer(contract, many=True)
+    total_count = contract.count()
+    return Response(data={"message": serializer.data, "total_count": total_count}, status=status.HTTP_200_OK)
+
