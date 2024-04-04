@@ -27,12 +27,26 @@ def home(request):
     param_date_to_formatted = param_date_to.strftime("%Y-%m-%d")
 
     cursor = connection.cursor()
-    query = f"""
-    SELECT  month, shop, category, SUM(count*price) 
+    query_old = f""" WITH dat AS (
+    SELECT  month, shop, category, SUM(count*price) as total
     FROM django_app_products
     WHERE month BETWEEN '{param_date_from_formatted}' 
     AND '{param_date_to_formatted}'
-    GROUP BY month, shop, category
+    GROUP BY month, shop, category)
+     SELECT month, shop, sladosti, other
+    FROM dat PIVOT
+    (SUM (total) FOR category IN ('Сладости' sladosti, 'Другое' other) )
+    """
+    query = f"""
+    SELECT month, shop,
+    SUM(CASE WHEN category = 'Сладости' THEN total ELSE 0 END) AS sladosti,
+    SUM(CASE WHEN category = 'Другое' THEN total ELSE 0 END) AS other
+    FROM (SELECT strftime("%Y-%m-%d", month) as month, shop, category,SUM(count*price) as total
+    FROM django_app_products
+    WHERE month BETWEEN '{param_date_from_formatted}' 
+    AND '{param_date_to_formatted}'
+    GROUP BY strftime("%Y-%m-%d", month), shop, category) as dat
+    GROUP BY month, shop;
     """
     cursor.execute(query)
     data = cursor.fetchall()
@@ -41,22 +55,21 @@ def home(request):
     for i in data:
         print(i)
 
-    # filter_date = (models.Products.objects.filter(month__gte=param_date_from_formatted).
-    #                filter(month__lte=param_date_to_formatted))
-    # data = {}
-    # for i in filter_date:
-    #     month_key = str(i.month)
-    #     shop_key = str(i.shop)
-    #     category_key = str(i.category)
-    #     if month_key not in data:
-    #         data[month_key] = {}
-    #     if shop_key not in data:
-    #         data[month_key][shop_key] = {}
-    #     if category_key not in data:
-    #         data[month_key][shop_key][category_key] = 0
-    #     old_total_price = (
-    #         data.get(month_key, {}).get(shop_key, {}).get(category_key, 0))
-    #     data[month_key][shop_key][category_key] = old_total_price + i.price * i.count
-    #
-    # data_2 = []
-    return Response(data={'message': data})
+    filter_date = (models.Products.objects.filter(month__gte=param_date_from_formatted).
+                   filter(month__lte=param_date_to_formatted))
+    data_1 = {}
+    for i in filter_date:
+        month_key = str(i.month)
+        shop_key = str(i.shop)
+        category_key = str(i.category)
+        if month_key not in data:
+            data_1[month_key] = {}
+        if shop_key not in data:
+            data_1[month_key][shop_key] = {}
+        if category_key not in data:
+            data_1[month_key][shop_key][category_key] = 0
+        old_total_price = (
+            data_1.get(month_key, {}).get(shop_key, {}).get(category_key, 0))
+        data_1[month_key][shop_key][category_key] = old_total_price + i.price * i.count
+
+    return Response(data={'message': data_1, 'message_2': data_1}, status=200)
