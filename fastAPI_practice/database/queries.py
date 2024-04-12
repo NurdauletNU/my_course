@@ -1,4 +1,3 @@
-import psycopg2
 from dotenv import load_dotenv
 import asyncpg
 import os
@@ -10,23 +9,12 @@ DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_HOST = os.getenv('DB_HOST')
 DB_PORT = os.getenv('DB_PORT')
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
-def get_db_connection():
-    return psycopg2.connect(
-        dbname=DB_NAME,
-        dbuser=DB_USER,
-        dbpassword=DB_PASSWORD,
-        dbhost=DB_HOST,
-        dbport=DB_PORT
-    )
+async def connect_to_database():
+    return await asyncpg.connect(DATABASE_URL)
 
 
-def get_db_version():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT version():")
-    db_version = cursor.fetchone()[0]
-    cursor.close()
-    conn.close()
-    return db_version
+async def disconnect_from_database(connection):
+    await connection.close()
