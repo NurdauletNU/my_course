@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.urls import path, include, re_path
 
 urlpatterns = [
+    path('grappelli/', include('grappelli.urls')),  # grappelli URLS
     path('admin/', admin.site.urls),
     path('', include('django_app.urls')),
     # re_path(r"^.*$", lambda request: redirect("", permanent=False), name="redirect"),  # 404

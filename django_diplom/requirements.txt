@@ -1,7 +1,7 @@
 asgiref==3.8.1
 certifi==2024.2.2
 charset-normalizer==3.3.2
-Django==5.0.4
+Django~=5.0.1
 django-cors-headers==4.3.1
 et-xmlfile==1.1.0
 gunicorn==22.0.0
@@ -11,4 +11,17 @@ packaging==24.0
 requests==2.31.0
 sqlparse==0.5.0
 tzdata==2024.1
-urllib3==2.2.1
+urllib3~=2.1.0
+
+pip~=22.3.1
+Jinja2~=3.1.2
+black~=24.2.0
+platformdirs~=4.2.0
+typing_extensions~=4.9.0
+colorama~=0.4.6
+pathspec~=0.12.1
+click~=8.1.7
+PyYAML~=6.0.1
+environ~=1.0
+setuptools~=65.5.0
+legacy~=0.1.7
