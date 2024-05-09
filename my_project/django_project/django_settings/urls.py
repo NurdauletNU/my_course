@@ -23,7 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('django_app.urls', namespace='django_app')),
     path('catalog/', include('goods.urls', namespace='catalog')),
-    path("__debug__/", include("debug_toolbar.urls"))
 ]
 
 if settings.DEBUG:
