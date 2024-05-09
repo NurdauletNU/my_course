@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
-from django.conf.global_settings import STATIC_ROOT
+from django.conf.global_settings import MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 
 
 
@@ -129,6 +129,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [BASE_DIR / "static"]
+
+MEDIA_URL='media/'
+MEDIA_ROOT = BASE_DIR/'media'
 
 INTERNAL_IPS = [
     # ...

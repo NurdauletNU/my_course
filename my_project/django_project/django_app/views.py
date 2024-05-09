@@ -4,12 +4,12 @@ from goods.models import Categories
 
 
 def index(request):
-    categories = Categories.objects.all()
+    
     
     context = {
         'title': 'Home - Главная',
         'content': 'Магазин мебели HOME',
-        'categories': categories
+        
     }
     return render(request, 'django_app/index.html', context=context)
 
