@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 
-from django.conf.global_settings import AUTH_USER_MODEL, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
+from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_ROOT, MEDIA_URL, STATIC_ROOT
 
 
 
@@ -150,3 +150,4 @@ INTERNAL_IPS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
+LOGIN_URL='/user/login/'
