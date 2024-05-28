@@ -16,7 +16,11 @@ def login(request):
             user = auth.authenticate(username=username, password=password)
             if user:
                 auth.login(request, user)
-                messages.success(request, f"{username}, Вы вошли в аккаунт") 
+                messages.success(request, f"{username}, Вы вошли в аккаунт")
+                
+                if request.POST.get('next', None):
+                    return HttpResponseRedirect(request.POST.get('next'))
+                
                 return HttpResponseRedirect(reverse('main:index'))
     else:
         form= UserLoginForm()
