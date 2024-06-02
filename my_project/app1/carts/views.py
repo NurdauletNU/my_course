@@ -11,35 +11,33 @@ from .models import Products, Cart
 from django.views.decorators.csrf import csrf_exempt
 
 def cart_add(request, product_slug):
-    
-   product = Products.objects.get(slug=product_slug)
-    
-   if request.user.is_authenticated:
+    product = get_object_or_404(Products, slug=product_slug)
+
+    if not request.session.session_key:
+        request.session.create()
+
+    if request.user.is_authenticated:
         carts = Cart.objects.filter(user=request.user, product=product)
-        
-        if carts.exists():
-            cart= carts.first()
-            if cart:
-                cart.quantity += 1
-                cart.save()
-                # messages.success(request, "Товар успешно добавлен в корзину.")
-        else:
-            Cart.objects.create(user=request.user, product=product, quantity=1)
-            # messages.success(request, "Товар успешно добавлен в корзину.")
-   else:
-        carts = Cart.objects.filter(
-            session_key=request.session.session_key, product=product)
 
         if carts.exists():
             cart = carts.first()
-            if cart:
-                cart.quantity += 1
-                cart.save()
+            cart.quantity += 1
+            cart.save()
         else:
-            Cart.objects.create(
-                session_key=request.session.session_key, product=product, quantity=1)
-    
-        return redirect(request.META['HTTP_REFERER'])
+            Cart.objects.create(user=request.user, product=product, quantity=1)
+        # messages.success(request, "Товар успешно добавлен в корзину.")
+    else:
+        carts = Cart.objects.filter(session_key=request.session.session_key, product=product)
+
+        if carts.exists():
+            cart = carts.first()
+            cart.quantity += 1
+            cart.save()
+        else:
+            Cart.objects.create(session_key=request.session.session_key, product=product, quantity=1)
+        # messages.success(request, "Товар успешно добавлен в корзину.")
+
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
     
 

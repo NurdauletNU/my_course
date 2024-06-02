@@ -40,10 +40,14 @@
                 <p class="card-text">Цена: <strong>{{ product.sell_price }} $</strong></p>
                 <h5 class="card-title">{{ product.name }}</h5>
                 <p class="card-text">{{ product.description }}</p>
-                <a href="{% url "cart:cart_add" product.slug %}" class="btn btn-dark add-to-cart"
-                data-product-slug="{{ product.slug }}">
-                data-csrf-token="{{ csrf_token }}">
-                Добавить в корзину</a>
+                <form action="{% url 'cart:cart_add' product.slug %}" method="post" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_slug" value="{{ product.slug }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-dark add-to-cart">
+                        Добавить в корзину
+                    </button>
+                </form>
             </div>
         </div>
     </div>

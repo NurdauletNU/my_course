@@ -20,3 +20,7 @@ def about(request):
                }
     
     return render(request, 'main/about.html', context)
+
+
+def contact_info(request):
+    return render(request, 'main/contact_info.html')

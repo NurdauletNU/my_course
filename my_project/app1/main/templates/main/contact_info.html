@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block modal_cart %}
+{% include "includes/cart_button.html" %}
+{% endblock  %}
+{% block content %}
+<div class="mt-5 pt-5 bg-white custom-shadow rounded">
+<div className="contact-container" >
+    <h1>Contact Us</h1>
+    <p className="contact-description">We'd love to hear from you! Reach out to us using the information below:</p>
+    <div className="contact-info">
+        <div className="contact-item">
+            <h2>Address</h2>
+            <p>123 Furniture Lane<br/>Hometown, HT 12345</p>
+        </div>
+        <div className="contact-item">
+            <h2>Phone</h2>
+            <p>(123) 456-7890</p>
+        </div>
+        <div className="contact-item">
+            <h2>Email</h2>
+            <p>info@furniturehome.com</p>
+        </div>
+        <div className="contact-item">
+            <h2>Business Hours</h2>
+            <p>Monday - Friday: 9:00 AM - 5:00 PM<br/>Saturday: 10:00 AM - 4:00 PM<br/>Sunday: Closed</p>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .contact-container {
+        padding: 20px;
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-container h1 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    
+    .contact-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .contact-item {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+    
+    .contact-item h2 {
+        color: #333;
+        margin-bottom: 10px;
+    }
+    
+    .contact-item p {
+        color: #666;
+        margin: 0;
+    }
+    
+</style>
+{% endblock  %}
+
+{% block footer %}
+<footer class="py-4 bg-dark">
+    <div class="container">
+        <p class="m-0 text-center text-white">Copyright &copy; Home 2024</p>
+    </div>
+</footer>
+{% endblock  %}
