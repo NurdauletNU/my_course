@@ -21,6 +21,11 @@ from django.urls import path,include
 from app import settings 
 from django.conf.urls.static import static
 
+from carts.views import CartAPIView
+from goods.views import CategoryAPIView, ProductAPIIView
+from orders.views import OrderAPIView, OrderItemAPIView
+from users.views import UserAPIView
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +34,14 @@ urlpatterns = [
     path('user/', include('users.urls', namespace='user')),
     path('cart/', include('carts.urls', namespace='cart')),
     path('orders/', include('orders.urls', namespace='orders')),
+    path('api/cartlist/', CartAPIView.as_view()),
+    path('api/category/', CategoryAPIView.as_view()),
+    path('api/product/', ProductAPIIView.as_view()),
+    path('api/order/', OrderAPIView.as_view()),
+    path('api/order-item/', OrderItemAPIView.as_view()),
+    path('api/user/', UserAPIView.as_view()),
+    
+    
     
 ]
 

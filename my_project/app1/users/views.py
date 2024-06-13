@@ -7,7 +7,12 @@ from django.urls import reverse
 from carts.models import Cart
 from orders.models import Order, OrderItem
 from users.forms import ProfileForm, UserLoginForm, UserRegistrationForm
-
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from users.models import User
+from users.serializers import UserSerializer
 
 
 def login(request):
@@ -105,3 +110,13 @@ def logout(request):
     messages.success(request, f"{request.user.username}, Вы вышли из аккаунта") 
     auth.logout(request)
     return redirect(reverse('main:index'))
+
+
+
+    
+    
+    
+    
+class UserAPIView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

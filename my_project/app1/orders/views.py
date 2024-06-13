@@ -4,8 +4,15 @@ from django.forms import ValidationError
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from carts.models import Cart
+from django.forms import model_to_dict
 from orders.forms import CreateOrderForm
 from orders.models import Order, OrderItem
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from orders.serializers import OrderItemSerializer, OrderSerializer
+
 
 @login_required
 def create_order(request):
@@ -70,3 +77,50 @@ def create_order(request):
         'orders': True,
     }
     return render(request, 'orders/create_order.html', context=context)
+
+class OrderAPIView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        order = Order.objects.all().values()
+        return Response({'order':order})
+    
+    def post(self, request):
+        post_new = Order().objects.create(
+            user=request.data['user'],
+            created_timestamp=request.data['created_timestamp'],
+            phone_number=request.data['phone_number'],
+            requires_delivery=request.data['requires_delivery'],
+            delivery_address=request.data['delivery_address'],
+            payment_on_get=request.data['payment_on_get'],
+            is_paid=request.data['is_paid'],
+            status=request.data['status'],
+        )
+        return Response({'post': model_to_dict(post_new)})
+    
+class OrderItemAPIView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        order_item = OrderItem.objects.all().values()
+        return Response({'order_item':order_item})
+    
+    def post(self, request):
+        post_new = Order().objects.create(
+            product=request.data['product'],
+            name=request.data['name'],
+            price=request.data['price'],
+            quantity=request.data['quantity'],
+            created_timestamp=request.data['created_timestamp'],
+        )
+        return Response({'post': model_to_dict(post_new)})
+    
+
+# class OrderAPIView(generics.ListAPIView):
+#    queryset = Order.objects.all()
+#    serializer_class = OrderSerializer
+    
+    
+# class OrderItemAPIView(generics.ListAPIView):
+#    queryset = OrderItem.objects.all()
+#    serializer_class= OrderItemSerializer

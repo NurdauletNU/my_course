@@ -59,7 +59,7 @@
                                     Мой профиль
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item  text-white" href="carts/cart.html">Корзина</a></li>
+                                    <li><a class="dropdown-item  text-white" href="{% url "user:users_cart" %}">Корзина</a></li>
                                     <li><a class="dropdown-item  text-white" href="{% url "user:profile" %}">Личный кабинет</a>
                                     </li>
                                     {% if user.is_admin or user.is_staff %}
@@ -100,19 +100,19 @@
                         {% endfor %}
                     </ul>
                 </div>
-                <!-- Значек корзины, вызывает модальное окно -->
+                
                 {% block modal_cart %}{% endblock  %}
-                <!-- Закончилась разметка модального окна -->
+                
             </div>
         </div>
         <!-- Контент -->
         <div class="container">
             <div class="row mt-1">
                 <div class="col-lg-2">
-                    <!-- Пустой блок на Ваше усмотрение -->
+                    
                 </div>
                 <div class="col-lg-10">
-                    <!-- Контент на странице -->
+                    
                     {% include "includes/notifications.html" %}
                     {% block content %}{% endblock  %}
                 </div>
@@ -135,8 +135,89 @@
             });
         });
     </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    var csrftoken = getCookie('csrftoken');
 
-            
+    function csrfSafeMethod(method) {
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $('.add-to-cart').click(function(e) {
+        e.preventDefault();
+        var productSlug = $(this).data('product-slug');
+        
+        $.ajax({
+            url: '/cart_add/' + productSlug + '/',
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                $('#message').text(response.message).show();
+                setTimeout(function() {
+                    $('#message').fadeOut('slow');
+                }, 4000); // 4000 миллисекунд = 4 секунд
+            },
+            error: function(xhr, status, error) {
+                console.error('Ошибка при добавлении товара в корзину: ', error);
+                console.error('Ответ сервера: ', xhr.responseText);
+            }
+        });
+    });
+});
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.remove-from-cart').click(function(e) {
+        e.preventDefault();
+        var cartId = $(this).data('cart-id');
+        
+        $.ajax({
+            url: '{% url "cart:cart_remove" 0 %}'.replace('0', cartId),
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}' // Передача CSRF токена в данных запроса
+            },
+            success: function(response) {
+                alert(response.message);  // Отобразить сообщение об успехе
+                // Удалить соответствующий элемент из DOM или обновить содержимое корзины здесь
+            },
+            error: function(xhr, status, error) {
+                alert('Ошибка при удалении товара из корзины.');
+            }
+        });
+    });
+});
+</script>
+
+
+
+
+
+   
     
     
 </body>

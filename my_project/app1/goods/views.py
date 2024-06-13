@@ -1,8 +1,14 @@
 from django.core.paginator import Paginator
+from django.forms import model_to_dict
 from django.shortcuts import get_list_or_404, render
-
-from goods.models import Products
+from goods.models import Products, Categories
+from goods.serializers import CategorySerializer, ProductSerializer
 from goods.utils import q_search
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 
 
 def catalog(request, category_slug=None):
@@ -43,3 +49,52 @@ def product(request, product_slug):
     context = {'product': product}
     
     return render(request, "goods/product.html", context)
+
+
+
+
+class CategoryAPIView(APIView):
+    permission_classes = [AllowAny]
+    
+    def get(self, request):
+        category = Categories.objects.all().values()
+        return Response({'category': category})
+    
+    
+    def post(self, request):
+        post_new = Categories().objects.create(
+            name=request.data['name'],
+            slug=request.data['slug'],
+            
+        )
+        return Response({'post': model_to_dict(post_new)})
+    
+    
+    
+class ProductAPIIView(APIView):
+    permission_classes=[AllowAny]
+    
+    def get(self, request):
+        product = Products.objects.all().values()
+        return Response({'prproduct':product})
+    
+    def post(self, request):
+        post_new = Categories().objects.create(
+            name=request.data['name'],
+            slug=request.data['slug'],
+            description=request.data['description'],
+            price=request.data['price'],
+            discount=request.data['discount'],
+            quantity=request.data['quantity'],
+            category_id=request.data['category_id'])
+        return Response({'post': model_to_dict(post_new)})
+    
+    
+
+# class CategoryAPIView(generics.ListAPIView):
+#    queryset = Categories.objects.all()
+#    serializer_class = CategorySerializer
+    
+# class ProductAPIIView(generics.ListAPIView):
+#    queryset = Products.objects.all()
+#    serializer_class = ProductSerializer
